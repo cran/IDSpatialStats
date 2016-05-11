@@ -1,4 +1,4 @@
-e775c444f1009dac5552ed6cd2374574 *DESCRIPTION
+a036b32ec36b7a111f9182747ff350a8 *DESCRIPTION
 962127ec81e18c4f89f78e0863cfa282 *NAMESPACE
 a7d7a1413c8218e267ad3662706ce4f1 *R/examples/get_pi.R
 f16586872f96e00967e2f794facb290c *R/examples/get_pi_bootstrap.R
@@ -58,4 +58,4 @@ e88d9850523fec350f49476e2ab1d3dd *man/get.theta.permute.Rd
 1b665a3a98e36696323f9c0c9bdabbcf *man/get.theta.typed.Rd
 bb39b936917b0eaec445ccf1aaa1cdc9 *man/get.theta.typed.bootstrap.Rd
 20e6a88631b348ebe4a09a8fc78fda3b *man/get.theta.typed.permute.Rd
-6c5243be37cbb50ed1c957c8d118ff42 *src/spatialfuncs.c
+3b6d215fe5cf02eb7b33559ba336684e *src/spatialfuncs.c
