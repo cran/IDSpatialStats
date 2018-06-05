@@ -14,4 +14,3 @@ Dataset simulated using an agent based model with a spatially heterogeneous popu
 \author{
 Justin Lessler and Henrik Salje
 }
-
