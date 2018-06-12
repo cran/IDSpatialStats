@@ -1,6 +1,6 @@
 Package: IDSpatialStats
-Version: 0.3.4
-Date: 2018-06-02
+Version: 0.3.5
+Date: 2018-06-11
 Title: Estimate Global Clustering in Infectious Disease
 Author: Justin Lessler <justin@jhu.edu>, Henrik Salje <hsalje@jhsph.edu>, John Giles <gilesjohnr@gmail.com>
 Maintainer: Justin Lessler <justin@jhu.edu>
@@ -15,6 +15,6 @@ Depends: doParallel, foreach, parallel, R (>= 2.10)
 Suggests: knitr, rmarkdown, testthat
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2018-06-05 19:17:12 UTC; default
+Packaged: 2018-06-12 18:38:34 UTC; giles
 Repository: CRAN
-Date/Publication: 2018-06-05 19:55:38 UTC
+Date/Publication: 2018-06-12 18:56:14 UTC
