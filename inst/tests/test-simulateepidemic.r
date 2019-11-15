@@ -10,9 +10,9 @@ test_that("Plausible parameter values produce simulations: R", {
                               gen.t.sd=3,
                               min.cases=2,
                               max.try=1000)
-           
-          expect_true(is.matrix(sim) & is.numeric(sim) & ncol(sim) == 3) # Output is a three column numerical matrix
-          expect_gte(length(sim), 2) # Number of cases in output > min.cases 
+          
+          expect_true(is.data.frame(sim) & is.numeric(sim[,1]) & ncol(sim) == 3) # Output is a three column numerical matrix
+          expect_gte(nrow(sim), 2) # Number of cases in output > min.cases 
      }
 })
 
@@ -27,7 +27,7 @@ test_that("Plausible parameter values produce simulations: tot.generations", {
                               min.cases=2,
                               max.try=1000)
           
-          expect_true(is.matrix(sim) & is.numeric(sim) & ncol(sim) == 3) # Output is a three column numerical matrix
+          expect_true(is.data.frame(sim) & is.numeric(sim[,1]) & ncol(sim) == 3) # Output is a three column numerical matrix
           expect_gte(nrow(sim), 2) # Number of cases in output > min.cases 
      }
 })
@@ -43,8 +43,8 @@ test_that("Plausible parameter values produce simulations: min.cases", {
                               min.cases=i,
                               max.try=1000)
           
-          expect_true(is.matrix(sim) & is.numeric(sim) & ncol(sim) == 3) # Output is a three column numerical matrix
-          expect_gte(length(sim), 2) # Number of cases in output > min.cases 
+          expect_true(is.data.frame(sim) & is.numeric(sim[,1]) & ncol(sim) == 3) # Output is a three column numerical matrix
+          expect_gte(nrow(sim), 2) # Number of cases in output > min.cases 
      }
 })
 
@@ -59,8 +59,8 @@ test_that("Plausible parameter values produce simulations: max.try", {
                               min.cases=2,
                               max.try=i)
           
-          expect_true(is.matrix(sim) & is.numeric(sim) & ncol(sim) == 3) # Output is a three column numerical matrix
-          expect_gte(length(sim), 2) # Number of cases in output > min.cases 
+          expect_true(is.data.frame(sim) & is.numeric(sim[,1]) & ncol(sim) == 3) # Output is a three column numerical matrix
+          expect_gte(nrow(sim), 2) # Number of cases in output > min.cases 
      }
 })
 
@@ -81,13 +81,13 @@ test_that("Works with various trasmission kernel functions", {
                               min.cases=2,
                               max.try=1000)
           
-          expect_true(is.matrix(sim) & is.numeric(sim) & ncol(sim) == 3) # Output is a three column numerical matrix
-          expect_gte(length(sim), 2) # Number of cases in output > min.cases 
+          expect_true(is.data.frame(sim) & is.numeric(sim[,1]) & ncol(sim) == 3) # Output is a three column numerical matrix
+          expect_gte(nrow(sim), 2) # Number of cases in output > min.cases 
      }
 })
 
 test_that("Implausible simulations throw errors", {
-
+     
      # Nonsense values
      msg <- "Chosen parameters did not produce epidemic."
      

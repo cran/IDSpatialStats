@@ -5,7 +5,8 @@
 \title{runs bootstrapping for \code{get.tau.typed}}
 \usage{
 get.tau.typed.bootstrap(posmat, typeA = -1, typeB = -1, r = 1,
-  r.low = rep(0, length(r)), boot.iter, comparison.type = "representative")
+  r.low = rep(0, length(r)), boot.iter,
+  comparison.type = "representative", data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix with columns type, x and y}
@@ -25,6 +26,8 @@ get.tau.typed.bootstrap(posmat, typeA = -1, typeB = -1, r = 1,
   \item "representative" if comparison set is representative of the underlying population
   \item "independent" if comparison set is cases/events coming from an independent process
 }}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 tau values for all the distances we looked at
@@ -33,10 +36,38 @@ tau values for all the distances we looked at
 runs bootstrapping for \code{get.tau.typed}
 }
 \examples{
-\dontrun{
- R/examples/get_tau_typed_bootstrap.R
- }
+\donttest{
 
+data(DengueSimulationR02)
+
+r.max<-seq(20,1000,20)
+r.min<-seq(0,980,20)
+r.mid<-(r.max+r.min)/2
+
+# Lets see if there's a difference in spatial dependence between those that occurred 
+# late versus early in the outbreak
+
+type <- 2 - (DengueSimR02[,"time"] < 120)
+tmp <- cbind(DengueSimR02, type=type)
+
+typed.tau <- get.tau.typed(tmp, typeA=1, typeB=2, r=r.max, r.low=r.min, 
+                           comparison.type = "independent")
+
+typed.tau.type.bs <- get.tau.typed.bootstrap(tmp, typeA=1, typeB=2, r=r.max, r.low=r.min, 
+                                             boot.iter=100, comparison.type = "independent")
+
+ci <- apply(typed.tau.type.bs[,-(1:2)], 1, quantile, probs=c(0.025,0.975))
+
+plot(r.mid, typed.tau$tau, log="y",
+     ylim=c(0.1,4), cex.axis=1.25,
+     xlab="Distance (m)", ylab="Tau",
+     cex.main=0.9, lwd=2, type="n")
+abline(h=1,lty=1)
+lines(r.mid,typed.tau$tau,pch=20,col=1,lwd=3)
+lines(r.mid, ci[1,] , lty=2)
+lines(r.mid, ci[2,] , lty=2)
+
+}
 }
 \seealso{
 Other get.tau: \code{\link{get.tau.bootstrap}},
@@ -47,3 +78,4 @@ Other get.tau: \code{\link{get.tau.bootstrap}},
 \author{
 Justin Lessler and Henrik Salje
 }
+\concept{get.tau}

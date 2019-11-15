@@ -5,7 +5,7 @@
 \title{runs bootstrapping on \code{get.theta.typed}}
 \usage{
 get.theta.typed.bootstrap(posmat, typeA = -1, typeB = -1, r = 1,
-  r.low = rep(0, length(r)), boot.iter)
+  r.low = rep(0, length(r)), boot.iter, data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix with columns type, x and y}
@@ -19,6 +19,8 @@ get.theta.typed.bootstrap(posmat, typeA = -1, typeB = -1, r = 1,
 \item{r.low}{the low end of each range....0  by default}
 
 \item{boot.iter}{the number of bootstrap iterations}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 theta values for all the distances we looked at
@@ -28,10 +30,20 @@ Bootstraps typed pi values. Makes sure distances between a sample and
 another draw of itself are left out
 }
 \examples{
-\dontrun{
- R/examples/get_theta_typed_bootstrap.R
- }
+\donttest{
 
+data(DengueSimR01)
+
+r.max<-seq(20,1000,20)
+r.min<-seq(0,980,20)
+
+#Lets see if there's a difference in spatial dependence by time case occurs
+type<-2-(DengueSimR01[,"time"]<75)
+tmp<-cbind(DengueSimR01,type=type)
+
+typed.theta.bs<-get.theta.typed.bootstrap(tmp,typeA=1,typeB=2,r=r.max,r.low=r.min,boot.iter=100)
+
+}
 }
 \seealso{
 Other get.theta: \code{\link{get.theta.bootstrap}},
@@ -40,3 +52,4 @@ Other get.theta: \code{\link{get.theta.bootstrap}},
   \code{\link{get.theta.typed.permute}},
   \code{\link{get.theta.typed}}, \code{\link{get.theta}}
 }
+\concept{get.theta}

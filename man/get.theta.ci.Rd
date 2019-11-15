@@ -5,7 +5,8 @@
 \title{Calculate bootstrapped confidence intervals for \code{get.theta} values.}
 \usage{
 get.theta.ci(posmat, fun, r = 1, r.low = rep(0, length(r)),
-  boot.iter = 1000, ci.low = 0.025, ci.high = 0.975)
+  boot.iter = 1000, ci.low = 0.025, ci.high = 0.975,
+  data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix with columns type, x and y}
@@ -21,6 +22,8 @@ get.theta.ci(posmat, fun, r = 1, r.low = rep(0, length(r)),
 \item{ci.low}{the low end of the ci...0.025 by default}
 
 \item{ci.high}{the high end of the ci...0.975 by default}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 a matrix with a row for the high and low values and
@@ -31,10 +34,31 @@ Wrapper to \code{get.theta.bootstrap} that takes care of calculating the
 confience intervals based on the bootstrapped values.
 }
 \examples{
-\dontrun{
- R/examples/get_theta_ci.R
- }
+\donttest{
 
+#compare normally distributed with uniform points
+x<-cbind(1,runif(100,-100,100), runif(100,-100,100))
+x<-rbind(x, cbind(2,rnorm(100,0,20), rnorm(100,0,20)))
+colnames(x) <- c("type","x","y")
+
+fun<-function(a,b) {
+    if(a[1]!=2) return(3)
+    if (b[1]==2) return(1)
+    return(2)
+}
+
+r.max<-seq(10,100,10)
+r.min<-seq(0,90,10)
+r.mid <- (r.max+r.min)/2
+
+theta<-get.theta(x,fun,r=r.max,r.low=r.min)
+theta.ci<-get.theta.ci(x,fun,r=r.max,r.low=r.min,boot.iter=100)
+
+plot(r.mid, theta$theta, type="l")
+lines(r.mid, theta.ci[,2] , lty=2)
+lines(r.mid, theta.ci[,3] , lty=2)
+
+}
 }
 \seealso{
 Other get.theta: \code{\link{get.theta.bootstrap}},
@@ -46,3 +70,4 @@ Other get.theta: \code{\link{get.theta.bootstrap}},
 \author{
 Justin Lessler
 }
+\concept{get.theta}

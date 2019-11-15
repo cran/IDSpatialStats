@@ -4,8 +4,8 @@
 \alias{get.theta.typed}
 \title{Optimized version of \code{get.theta} for typed data.}
 \usage{
-get.theta.typed(posmat, typeA = -1, typeB = -1, r = 1, r.low = rep(0,
-  length(r)))
+get.theta.typed(posmat, typeA = -1, typeB = -1, r = 1,
+  r.low = rep(0, length(r)), data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix with columns type, x and y}
@@ -17,6 +17,8 @@ get.theta.typed(posmat, typeA = -1, typeB = -1, r = 1, r.low = rep(0,
 \item{r}{the series of spatial distances wer are interested in}
 
 \item{r.low}{the low end of each range....0  by default}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 theta values for all the distances we looked at
@@ -27,7 +29,9 @@ data where we are interested in the odds that points within some distance of poi
 typeA are of typeB.
 }
 \examples{
-data(DengueSimulationR02)
+\donttest{
+
+data(DengueSimR02)
 
 r.max<-seq(20,1000,20)
 r.min<-seq(0,980,20)
@@ -37,6 +41,8 @@ type<-2-(DengueSimR02[,"time"]<120)
 tmp<-cbind(DengueSimR02,type=type)
 
 typed.theta.R01<-get.theta.typed(tmp,typeA=2,typeB=2,r=r.max,r.low=r.min)
+
+}
 }
 \seealso{
 Other get.theta: \code{\link{get.theta.bootstrap}},
@@ -49,3 +55,4 @@ Other get.theta: \code{\link{get.theta.bootstrap}},
 \author{
 Justin Lessler and Henrik Salje
 }
+\concept{get.theta}

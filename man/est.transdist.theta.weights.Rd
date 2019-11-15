@@ -26,6 +26,8 @@ This function estimates the weight of each theta value by performing a user defi
 of each theta are calculated as the number of simulations in which a case at time \code{t1} and \code{t2} are separated by theta transmission events.
 }
 \examples{
+\donttest{
+
 set.seed(1)
 
 gen.t.mean <- 7
@@ -65,6 +67,7 @@ b <- est.transdist.theta.weights(case.times=case.times,
                                  t1=t1, 
                                  t.density=t.density)
 }
+}
 \references{
 Salje H, Cummings DAT and Lessler J (2016). “Estimating infectious disease transmission distances using the overall distribution of cases.” Epidemics, 17, pp. 10–18. ISSN 1755-4365, doi: \href{https://www.sciencedirect.com/science/article/pii/S1755436516300317}{10.1016/j.epidem.2016.10.001}.
 }
@@ -76,5 +79,6 @@ Other transdist: \code{\link{est.transdist.bootstrap.ci}},
   \code{\link{get.transdist.theta}}
 }
 \author{
-Justin Lessler, Henrik Salje, and John Giles
+John Giles, Justin Lessler, and Henrik Salje
 }
+\concept{transdist}

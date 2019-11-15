@@ -45,6 +45,8 @@ a list object containing the point estimate for mean transmission distance and l
 Runs \code{est.trandsdist} on multiple bootstraps of the data and calculates confidence intervals for the mean transmission distance.
 }
 \examples{
+\donttest{
+
 set.seed(1)
 
 # Exponentially distributed transmission kernel with mean and standard deviation = 100
@@ -71,7 +73,9 @@ b <- est.transdist.bootstrap.ci(epi.data=a,
                                 ci.low=0.025,
                                 ci.high=0.975,
                                 parallel=FALSE)
+b
 
+}
 }
 \references{
 Salje H, Cummings DAT and Lessler J (2016). “Estimating infectious disease transmission distances using the overall distribution of cases.” Epidemics, 17, pp. 10–18. ISSN 1755-4365, doi: \href{https://www.sciencedirect.com/science/article/pii/S1755436516300317}{10.1016/j.epidem.2016.10.001}.
@@ -84,5 +88,6 @@ Other transdist: \code{\link{est.transdist.temporal.bootstrap.ci}},
   \code{\link{get.transdist.theta}}
 }
 \author{
-Justin Lessler, Henrik Salje, and John Giles
+John Giles, Justin Lessler, and Henrik Salje
 }
+\concept{transdist}

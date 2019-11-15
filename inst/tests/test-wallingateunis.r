@@ -126,7 +126,7 @@ test_that("Testing border conditions: all cases in last time step", {
      # Basic weights
      wt.weights <- est.wt.matrix.weights(case.times=case.times, gen.t.dist=t.density)
      
-
+     
      
      # expected basic WT weights
      expected.wt.weights <- matrix(c(0, 0,
@@ -161,5 +161,3 @@ test_that("Testing border conditions: all cases in last time step", {
      # Calculated values are identical to known values
      expect_identical(wt.vals, expected.wt.vals) 
 })
-
-

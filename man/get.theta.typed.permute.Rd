@@ -5,7 +5,7 @@
 \title{get the null distribution of the get.theta.typed function}
 \usage{
 get.theta.typed.permute(posmat, typeA = -1, typeB = -1, r = 1,
-  r.low = rep(0, length(r)), permutations)
+  r.low = rep(0, length(r)), permutations, data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix with columns type, x and y}
@@ -19,6 +19,8 @@ get.theta.typed.permute(posmat, typeA = -1, typeB = -1, r = 1,
 \item{r.low}{the low end of each range....0  by default}
 
 \item{permutations}{the number of permute iterations}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 theta values for all the distances we looked at
@@ -29,10 +31,22 @@ if there were no spatial dependence. Randomly reassigns coordinates
 to each observation permutations times
 }
 \examples{
-\dontrun{
- R/examples/get_theta_typed_permute.R
- }
+\donttest{
 
+data(DengueSimR01)
+
+r.max<-seq(20,1000,20)
+r.min<-seq(0,980,20)
+
+#Lets see if there's a difference in spatial dependence by time case occurs
+type<-2-(DengueSimR01[,"time"]<75)
+tmp<-cbind(DengueSimR01,type=type)
+
+typed.theta.R01<-get.theta.typed(tmp,typeA=1,typeB=2,r=r.max,r.low=r.min)
+typed.theta.type.null<-get.theta.typed.permute(tmp, typeA=1, typeB=2, 
+                                               r=r.max, r.low=r.min, permutations=100)
+
+}
 }
 \seealso{
 Other get.theta: \code{\link{get.theta.bootstrap}},
@@ -44,3 +58,4 @@ Other get.theta: \code{\link{get.theta.bootstrap}},
 \author{
 Justin Lessler and Henrik Salje
 }
+\concept{get.theta}

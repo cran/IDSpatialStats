@@ -5,7 +5,7 @@
 \title{runs bootstrapping on \code{get.pi.typed}}
 \usage{
 get.pi.typed.bootstrap(posmat, typeA = -1, typeB = -1, r = 1,
-  r.low = rep(0, length(r)), boot.iter)
+  r.low = rep(0, length(r)), boot.iter, data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix with columns type, x and y}
@@ -19,6 +19,8 @@ get.pi.typed.bootstrap(posmat, typeA = -1, typeB = -1, r = 1,
 \item{r.low}{the low end of each range....0  by default}
 
 \item{boot.iter}{the number of bootstrap iterations}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 pi values for all the distances we looked at
@@ -28,10 +30,20 @@ Bootstraps typed pi values. Makes sure distances between a sample and
 another draw of itself are left out
 }
 \examples{
-\dontrun{
- R/examples/get_pi_typed_bootstrap.R
- }
+\donttest{
 
+data(DengueSimR02)
+
+r.max<-seq(20,1000,20)
+r.min<-seq(0,980,20)
+
+#Lets see if there's a difference in spatial dependence by time case occurs
+type<-2-(DengueSimR02[,"time"]<120)
+tmp<-cbind(DengueSimR02,type=type)
+
+typed.pi.bs<-get.pi.typed.bootstrap(tmp,typeA=1,typeB=2,r=r.max,r.low=r.min,boot.iter=100)
+
+}
 }
 \seealso{
 Other get.pi: \code{\link{get.pi.bootstrap}},
@@ -39,3 +51,4 @@ Other get.pi: \code{\link{get.pi.bootstrap}},
   \code{\link{get.pi.typed.permute}},
   \code{\link{get.pi.typed}}, \code{\link{get.pi}}
 }
+\concept{get.pi}

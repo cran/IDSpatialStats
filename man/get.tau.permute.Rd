@@ -4,8 +4,8 @@
 \alias{get.tau.permute}
 \title{get the null distribution of the \code{get.tau} function}
 \usage{
-get.tau.permute(posmat, fun, r = 1, r.low = rep(0, length(r)), permutations,
-  comparison.type = "representative")
+get.tau.permute(posmat, fun, r = 1, r.low = rep(0, length(r)),
+  permutations, comparison.type = "representative", data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix appropriate for input to \code{get.tau}}
@@ -19,6 +19,8 @@ get.tau.permute(posmat, fun, r = 1, r.low = rep(0, length(r)), permutations,
 \item{permutations}{the number of permute iterations}
 
 \item{comparison.type}{the comparison type to pass as input to \code{get.pi}}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 tau values for all the distances we looked at
@@ -29,10 +31,34 @@ if there were no spatial dependence. Randomly reassigns coordinates
 to each observation permutations times
 }
 \examples{
-\dontrun{
- R/examples/get_tau_permute.R
- }
+\donttest{
 
+#compare normally distributed with uniform points
+x<-cbind(1,runif(100,-100,100), runif(100,-100,100))
+x<-rbind(x, cbind(2,rnorm(100,0,20), rnorm(100,0,20)))
+colnames(x) <- c("type","x","y")
+
+fun<-function(a,b) {
+    if(a[1]!=2) return(3)
+    if (b[1]==2) return(1)
+    return(2)
+}
+
+r.max<-seq(10,100,10)
+r.min<-seq(0,90,10)
+r.mid <- (r.max+r.min)/2
+
+tau<-get.tau(x,fun,r=r.max,r.low=r.min,comparison.type = "independent")
+tau.null<-get.tau.permute(x,fun,r=r.max,r.low=r.min,permutations=50,comparison.type = "independent")
+
+null.ci<-apply(tau.null[,-(1:2)],1,quantile,probs=c(0.25,0.75))
+
+plot(r.mid, tau$tau, ylim=c(1/max(tau$tau),max(tau$tau)), type="l", log="y")
+lines(c(0,100),c(1,1), lty=3, col="grey")
+lines(r.mid, null.ci[1,] , lty=2)
+lines(r.mid, null.ci[2,] , lty=2)
+
+}
 }
 \seealso{
 Other get.tau: \code{\link{get.tau.bootstrap}},
@@ -44,3 +70,4 @@ Other get.tau: \code{\link{get.tau.bootstrap}},
 \author{
 Justin Lessler and Henrik Salje
 }
+\concept{get.tau}

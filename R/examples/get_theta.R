@@ -1,4 +1,6 @@
-data(DengueSimulationR02)
+\donttest{
+
+data(DengueSimR02)
 
 r.max<-seq(20,1000,20)
 r.min<-seq(0,980,20)
@@ -10,3 +12,5 @@ sero.type.func<-function(a,b,tlimit=20){
 }
 
 sero.theta<-get.theta(DengueSimR02,sero.type.func,r=r.max,r.low=r.min)
+
+}

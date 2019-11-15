@@ -4,9 +4,9 @@
 \alias{est.transdist.temporal}
 \title{Change in mean transmission distance over time}
 \usage{
-est.transdist.temporal(epi.data, gen.t.mean, gen.t.sd, t1, max.sep, max.dist,
-  n.transtree.reps = 10, mean.equals.sd = FALSE, theta.weights = NULL,
-  parallel = FALSE, n.cores = NULL)
+est.transdist.temporal(epi.data, gen.t.mean, gen.t.sd, t1, max.sep,
+  max.dist, n.transtree.reps = 10, mean.equals.sd = FALSE,
+  theta.weights = NULL, parallel = FALSE, n.cores = NULL)
 }
 \arguments{
 \item{epi.data}{a three-column matrix giving the coordinates (\code{x} and \code{y}) and time of infection (\code{t} for all cases in an epidemic (columns must be in \code{x}, \code{y}, \code{t} order)}
@@ -40,6 +40,8 @@ Estimates the change in mean transmission distance over the duration of the epid
 occuring up to each time point.
 }
 \examples{
+\donttest{
+     
 set.seed(123)
 
 # Exponentially distributed transmission kernel with mean and standard deviation = 100
@@ -65,15 +67,18 @@ b <- est.transdist.temporal(epi.data=a,
                             n.transtree.reps=5,
                             mean.equals.sd=TRUE,
                             parallel=FALSE)
+b
 
-plot(b[,1], pch=19, col='grey', ylim=c(min(b[,1], na.rm=TRUE), max(b[,1], na.rm=TRUE)), 
+plot(b[,2], pch=19, col='grey', ylim=c(min(b[,2], na.rm=TRUE), max(b[,2], na.rm=TRUE)), 
      xlab='Time step', ylab='Estimated mean of transmission kernel')
 abline(h=100, col='red', lty=2)
 axis(3, b[,2])
 
-low <- loess(b[,1] ~ as.vector(1:length(b[,1])))
-low <- predict(low, newdata=data.frame(as.vector(1:length(b[,1]))))
+low <- loess(b[,2] ~ as.vector(1:length(b[,2])))
+low <- predict(low, newdata=data.frame(as.vector(1:length(b[,2]))))
 lines(low, lwd=3, col='blue')
+
+}
 }
 \references{
 Salje H, Cummings DAT and Lessler J (2016). “Estimating infectious disease transmission distances using the overall distribution of cases.” Epidemics, 17, pp. 10–18. ISSN 1755-4365, doi: \href{https://www.sciencedirect.com/science/article/pii/S1755436516300317}{10.1016/j.epidem.2016.10.001}.
@@ -86,5 +91,6 @@ Other transdist: \code{\link{est.transdist.bootstrap.ci}},
   \code{\link{get.transdist.theta}}
 }
 \author{
-Justin Lessler, Henrik Salje, and John Giles
+John Giles, Justin Lessler, and Henrik Salje
 }
+\concept{transdist}

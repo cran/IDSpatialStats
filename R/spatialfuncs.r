@@ -5,22 +5,23 @@
 ##' specified by the passed in function with that point.
 ##'
 ##' @param posmat a matrix with columns x, y and any other named columns
-##'    columns needed by fun
-##' @param fun a function that takes in two rows of posmat and returns:
+##'    columns needed by \code{fun}
+##' @param fun a function that takes in two rows of \code{posmat} and returns:
 ##' \enumerate{
-##'      \item  for pairs included in the numerator and denominator
+##'      \item for pairs included in the numerator and denominator
 ##'      \item for pairs that should only be included in the denominator
 ##'      \item for pairs that should be ignored all together}
 ##' Note that names from \code{posmat} are not preserved in calls to \code{fun}, so the columns of the matrix should be
 ##' referenced numerically
-##' so this is not available to the fun
+##' so this is not available to the \code{fun}
 ##' @param r the series of spatial distances (or there maximums) we are
 ##'          interested in
 ##' @param r.low the low end of each range, 0 by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return  pi value for each distance range that we look at. Where:
 ##'
-##' \deqn{ \pi(d_1,d_2) = \frac{\sum \boldsymbol{1} (d_{ij} \in (d_1,d_2)) \boldsymbol{1} (f(i,j)=1) }{\sum \sum \boldsymbol{1} (d_{ij} \in (d_1,d_2)) \boldsymbol{1} (f(i,j) \in \{1,2\}) }}
+##'\deqn{ \pi(d_1, d_2) = \frac{\sum \boldsymbol{1} (d_{ij} \in [d_1,d_2)) \boldsymbol{1} (f(i,j)=1) }{\sum \sum \boldsymbol{1} [d_{ij} \in (d_1,d_2)) \boldsymbol{1} (f(i,j) \in \{1,2\}) }}
 ##'
 ##' @author Justin Lessler and Henrik Salje
 ##'
@@ -33,10 +34,11 @@
 get.pi <- function(posmat,
                    fun,
                    r = 1,
-                   r.low=rep(0,length(r))) {
+                   r.low=rep(0,length(r)),
+                   data.frame=TRUE) {
 
-  xcol <-  which(colnames(posmat)=="x")
-  ycol <- which(colnames(posmat)=="y")
+  xcol <-  which(colnames(posmat) == "x")
+  ycol <- which(colnames(posmat) == "y")
 
   #check that both columns exist
   if (length(xcol)!=1 & length(ycol)!=1) {
@@ -51,7 +53,12 @@ get.pi <- function(posmat,
               1:nrow(posmat),
               xcol,
               ycol)
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, pi=rc))
+  }
 }
 
 
@@ -76,10 +83,11 @@ get.pi <- function(posmat,
 ##' @param r the series of spatial distances (or there maximums) we are
 ##'          interested in
 ##' @param r.low the low end of each range, 0 by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return  theta value for each distance range that we look at. Where:
 ##'
-##' \deqn{ \theta(d_1,d_2) = \frac{\sum \boldsymbol{1} (d_{ij} \in (d_1,d_2)) \boldsymbol{1} (f(i,j)=1) }{\sum \sum \boldsymbol{1} (d_{ij} \in (d_1,d_2)) \boldsymbol{1} (f(i,j)=2) }}
+##' \deqn{ \theta(d_1,d_2) = \frac{\sum \boldsymbol{1} d_{ij} \in [d_1,d_2)) \boldsymbol{1} (f(i,j)=1) }{\sum \sum \boldsymbol{1} d_{ij} \in [d_1,d_2)) \boldsymbol{1} (f(i,j)=2) }}
 ##'
 ##' @author Justin Lessler and Henrik Salje
 ##'
@@ -88,10 +96,12 @@ get.pi <- function(posmat,
 ##'
 ##' @example R/examples/get_theta.R
 ##'
+
 get.theta <- function(posmat,
                       fun,
                       r = 1,
-                      r.low=rep(0,length(r))) {
+                      r.low=rep(0,length(r)),
+                      data.frame=TRUE) {
 
   xcol <-  which(colnames(posmat)=="x")
   ycol <- which(colnames(posmat)=="y")
@@ -109,7 +119,12 @@ get.theta <- function(posmat,
               1:nrow(posmat),
               xcol,
               ycol)
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, theta=rc))
+  }
 }
 
 
@@ -125,6 +140,7 @@ get.theta <- function(posmat,
 ##' @param typeB the "to" type that we are interested i, -1 is wildcard
 ##' @param r the series of spatial distances wer are interested in
 ##' @param r.low the low end of each range....0  by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return pi values for all the distances we looked at
 ##'
@@ -132,15 +148,17 @@ get.theta <- function(posmat,
 ##'
 ##' @family get.pi
 ##'
-##' @example R/examples/get_pi_typed.R
+##' @example  R/examples/get_pi_typed.R
 ##'
+
 get.pi.typed <- function(posmat,
                          typeA = -1,
                          typeB = -1,
                          r=1,
-                         r.low=rep(0,length(r))) {
+                         r.low=rep(0,length(r)),
+                         data.frame=TRUE) {
 
-  return(.C("get_pi_typed",
+  rc <- .C("get_pi_typed",
             as.integer(posmat[,"type"]),
             as.double(posmat[,"x"]),
             as.double(posmat[,"y"]),
@@ -151,10 +169,14 @@ get.pi.typed <- function(posmat,
             as.double(r),
             as.integer(length(r)),
             as.integer(1:nrow(posmat)),
-            rc=double(length(r))
-  )$rc)
+            rc=double(length(r)))
+     
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, pi=rc$rc))
+  }
 }
-
 
 
 ##'
@@ -169,6 +191,7 @@ get.pi.typed <- function(posmat,
 ##' @param typeB the "to" type that we are interested i, -1 is wildcard
 ##' @param r the series of spatial distances wer are interested in
 ##' @param r.low the low end of each range....0  by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return theta values for all the distances we looked at
 ##'
@@ -178,25 +201,32 @@ get.pi.typed <- function(posmat,
 ##'
 ##' @example R/examples/get_theta_typed.R
 ##'
+
 get.theta.typed <- function(posmat,
                             typeA = -1,
                             typeB = -1,
                             r=1,
-                            r.low=rep(0,length(r))) {
-
-  return(.C("get_theta_typed",
-            as.integer(posmat[,"type"]),
-            as.double(posmat[,"x"]),
-            as.double(posmat[,"y"]),
-            as.integer(nrow(posmat)),
-            as.integer(typeA),
-            as.integer(typeB),
-            as.double(r.low),
-            as.double(r),
-            as.integer(length(r)),
-            as.integer(1:nrow(posmat)),
-            rc=double(length(r))
-  )$rc)
+                            r.low=rep(0,length(r)),
+                            data.frame=TRUE) {
+     
+     rc <- .C("get_theta_typed",
+              as.integer(posmat[,"type"]),
+              as.double(posmat[,"x"]),
+              as.double(posmat[,"y"]),
+              as.integer(nrow(posmat)),
+              as.integer(typeA),
+              as.integer(typeB),
+              as.double(r.low),
+              as.double(r),
+              as.integer(length(r)),
+              as.integer(1:nrow(posmat)),
+              rc=double(length(r)))
+     
+     if (data.frame == FALSE) {
+          return(rc)
+     } else if (data.frame == TRUE) {
+          return(data.frame(r.low=r.low, r=r, theta=rc$rc))
+     }
 }
 
 
@@ -213,6 +243,7 @@ get.theta.typed <- function(posmat,
 ##' @param boot.iter the number of bootstrap iterations
 ##' @param ci.low the low end of the ci...0.025 by default
 ##' @param ci.high the high end of the ci...0.975 by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return a matrix with a row for the high and low values and
 ##'     a column per distance
@@ -221,33 +252,33 @@ get.theta.typed <- function(posmat,
 ##'
 ##' @family get.pi
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_pi_ci.R
-##'  }
+##' @example R/examples/get_pi_ci.R
 ##'
+
 get.pi.ci <- function(posmat,
                       fun,
                       r=1,
                       r.low=rep(0,length(r)),
                       boot.iter = 1000,
                       ci.low=0.025,
-                      ci.high=0.975) {
+                      ci.high=0.975,
+                      data.frame=TRUE) {
+     
   boots <- get.pi.bootstrap(posmat, fun, r, r.low, boot.iter)
 
-  rc <- matrix(nrow=2,ncol=ncol(boots))
-
-  rownames(rc) <- c(ci.low,ci.high)
-
-  for (i in 1:ncol(rc)) {
-    rc[,i] <- quantile(boots[,i], probs=c(ci.low, ci.high))
+  rc <- apply(boots[,-(1:2)], 1, quantile, probs=c(ci.low, ci.high))
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, 
+                         r=r, 
+                         pt.est=get.pi(posmat, fun, r, r.low)$pi, 
+                         ci.low=rc[1,], 
+                         ci.high=rc[2,]))
   }
-
-  return(rc)
 }
  
-
-
 
 ##' Calculate bootstrapped confidence intervals for \code{get.theta} values.
 ##'
@@ -262,6 +293,7 @@ get.pi.ci <- function(posmat,
 ##' @param boot.iter the number of bootstrap iterations
 ##' @param ci.low the low end of the ci...0.025 by default
 ##' @param ci.high the high end of the ci...0.975 by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return a matrix with a row for the high and low values and
 ##'     a column per distance
@@ -270,31 +302,32 @@ get.pi.ci <- function(posmat,
 ##'
 ##' @family get.theta
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_theta_ci.R
-##'  }
+##' @example R/examples/get_theta_ci.R
 ##'
+
 get.theta.ci <- function(posmat,
                          fun,
                          r=1,
                          r.low=rep(0,length(r)),
                          boot.iter = 1000,
                          ci.low=0.025,
-                         ci.high=0.975) {
+                         ci.high=0.975,
+                         data.frame=TRUE) {
+     
   boots <- get.theta.bootstrap(posmat, fun, r, r.low, boot.iter)
 
-  rc <- matrix(nrow=2,ncol=ncol(boots))
-
-  rownames(rc) <- c(ci.low,ci.high)
-
-  for (i in 1:ncol(rc)) {
-    rc[,i] <- quantile(boots[,i], probs=c(ci.low, ci.high))
+  rc <- apply(boots[,-(1:2)], 1, quantile, probs=c(ci.low, ci.high))
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, 
+                         r=r, 
+                         pt.est=get.theta(posmat, fun, r, r.low)$theta, 
+                         ci.low=rc[1,], 
+                         ci.high=rc[2,]))
   }
-
-  return(rc)
 }
-
 
 
 ##' Bootstrap \code{get.pi} values.
@@ -308,6 +341,7 @@ get.theta.ci <- function(posmat,
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range. 0 by default
 ##' @param boot.iter the number of bootstrap iterations
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return pi values for all the distances we looked at
 ##'
@@ -319,16 +353,15 @@ get.theta.ci <- function(posmat,
 ##'
 ##' @family get.pi
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_pi_bootstrap.R
-##'  }
+##' @example R/examples/get_pi_bootstrap.R
 ##'
+
 get.pi.bootstrap <- function(posmat,
                              fun,
                              r=1,
                              r.low=rep(0,length(r)),
-                             boot.iter = 500) {
+                             boot.iter=500,
+                             data.frame=TRUE) {
 
 
   xcol <-  which(colnames(posmat)=="x")
@@ -351,7 +384,12 @@ get.pi.bootstrap <- function(posmat,
                     xcol,
                     ycol)
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
 
 
@@ -366,6 +404,7 @@ get.pi.bootstrap <- function(posmat,
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range. 0 by default
 ##' @param boot.iter the number of bootstrap iterations
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return theta values for all the distances we looked at
 ##'
@@ -377,16 +416,15 @@ get.pi.bootstrap <- function(posmat,
 ##'
 ##' @family get.theta
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_theta_bootstrap.R
-##'  }
+##' @example R/examples/get_theta_bootstrap.R
 ##'
+
 get.theta.bootstrap <- function(posmat,
                                 fun,
                                 r=1,
                                 r.low=rep(0,length(r)),
-                                boot.iter = 500) {
+                                boot.iter=500,
+                                data.frame=TRUE) {
 
 
   xcol <-  which(colnames(posmat)=="x")
@@ -409,9 +447,13 @@ get.theta.bootstrap <- function(posmat,
                     xcol,
                     ycol)
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
-
 
 
 ##' runs bootstrapping on \code{get.pi.typed}
@@ -425,22 +467,22 @@ get.theta.bootstrap <- function(posmat,
 ##' @param typeB the "to" type that we are interested i, -1 is wildcard
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range....0  by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return pi values for all the distances we looked at
 ##'
 ##' @family get.pi
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_pi_typed_bootstrap.R
-##'  }
+##' @example R/examples/get_pi_typed_bootstrap.R
 ##'
+
 get.pi.typed.bootstrap <- function(posmat,
                                    typeA = -1,
                                    typeB = -1,
                                    r=1,
                                    r.low=rep(0,length(r)),
-                                   boot.iter) {
+                                   boot.iter,
+                                   data.frame=TRUE) {
 
 
   rc <- matrix(nrow=boot.iter, ncol=length(r))
@@ -460,9 +502,13 @@ get.pi.typed.bootstrap <- function(posmat,
                  rc=double(length(r))
     )$rc
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
-
 
 
 ##' runs bootstrapping on \code{get.theta.typed}
@@ -476,22 +522,22 @@ get.pi.typed.bootstrap <- function(posmat,
 ##' @param typeB the "to" type that we are interested i, -1 is wildcard
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range....0  by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return theta values for all the distances we looked at
 ##'
 ##' @family get.theta
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_theta_typed_bootstrap.R
-##'  }
+##' @example R/examples/get_theta_typed_bootstrap.R
 ##'
+
 get.theta.typed.bootstrap <- function(posmat,
                                       typeA = -1,
                                       typeB = -1,
                                       r=1,
                                       r.low=rep(0,length(r)),
-                                      boot.iter) {
+                                      boot.iter,
+                                      data.frame=TRUE) {
 
 
   rc <- matrix(nrow=boot.iter, ncol=length(r))
@@ -511,7 +557,12 @@ get.theta.typed.bootstrap <- function(posmat,
                  rc=double(length(r))
     )$rc
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
 
 
@@ -526,21 +577,21 @@ get.theta.typed.bootstrap <- function(posmat,
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range....0  by default
 ##' @param permutations the number of permute iterations
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return pi values for all the distances we looked at
 ##'
 ##' @family get.pi
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_pi_permute.R
-##'  }
+##' @example R/examples/get_pi_permute.R
 ##'
+
 get.pi.permute <- function(posmat,
                            fun,
                            r=1,
                            r.low=rep(0,length(r)),
-                           permutations) {
+                           permutations,
+                           data.frame=TRUE) {
 
 
   xcol <-  which(colnames(posmat)=="x")
@@ -566,7 +617,12 @@ get.pi.permute <- function(posmat,
                     xcol,
                     ycol)
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
 
 
@@ -581,21 +637,21 @@ get.pi.permute <- function(posmat,
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range....0  by default
 ##' @param permutations the number of permute iterations
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return theta values for all the distances we looked at
 ##'
 ##' @family get.theta
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_theta_permute.R
-##'  }
+##' @example R/examples/get_theta_permute.R
 ##'
+
 get.theta.permute <- function(posmat,
                               fun,
                               r=1,
                               r.low=rep(0,length(r)),
-                              permutations) {
+                              permutations,
+                              data.frame=TRUE) {
 
 
   xcol <-  which(colnames(posmat)=="x")
@@ -621,7 +677,12 @@ get.theta.permute <- function(posmat,
                     xcol,
                     ycol)
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
 
 
@@ -637,6 +698,7 @@ get.theta.permute <- function(posmat,
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range....0  by default
 ##' @param permutations the number of permute iterations
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return pi values for all the distances we looked at
 ##'
@@ -644,17 +706,16 @@ get.theta.permute <- function(posmat,
 ##'
 ##' @family get.pi
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_pi_typed_permute.R
-##'  }
+##' @example R/examples/get_pi_typed_permute.R
 ##'
+
 get.pi.typed.permute <- function(posmat,
                                  typeA = -1,
                                  typeB = -1,
                                  r=1,
                                  r.low=rep(0,length(r)),
-                                 permutations) {
+                                 permutations,
+                                 data.frame=TRUE) {
 
   xcol <-  which(colnames(posmat)=="x")
   ycol <- which(colnames(posmat)=="y")
@@ -682,7 +743,12 @@ get.pi.typed.permute <- function(posmat,
                  rc=double(length(r))
     )$rc
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
 
 
@@ -698,6 +764,7 @@ get.pi.typed.permute <- function(posmat,
 ##' @param r the series of spatial distances we are interested in
 ##' @param r.low the low end of each range....0  by default
 ##' @param permutations the number of permute iterations
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return theta values for all the distances we looked at
 ##'
@@ -705,17 +772,16 @@ get.pi.typed.permute <- function(posmat,
 ##'
 ##' @family get.theta
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_theta_typed_permute.R
-##'  }
+##' @example R/examples/get_theta_typed_permute.R
 ##'
+
 get.theta.typed.permute <- function(posmat,
                                     typeA = -1,
                                     typeB = -1,
                                     r=1,
                                     r.low=rep(0,length(r)),
-                                    permutations) {
+                                    permutations,
+                                    data.frame=TRUE) {
 
   xcol <-  which(colnames(posmat)=="x")
   ycol <- which(colnames(posmat)=="y")
@@ -743,9 +809,13 @@ get.theta.typed.permute <- function(posmat,
                  rc=double(length(r))
     )$rc
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
-
 
 
 ##' generalized version of \code{get.tau}
@@ -773,30 +843,30 @@ get.theta.typed.permute <- function(posmat,
 ##'   \item "representative" if comparison set is representative of the underlying population
 ##'   \item "independent" if comparison set is cases/events coming from an indepedent process
 ##' }
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return The tau value for each distance we look at. If \code{comparison.type} is "representative", this is:
 ##'
-##' \code{tau = get.pi(posmat, fun, r, r.low)/get.pi(posmat,fun,0,infinity)}
+##' \code{tau = get.pi(posmat, fun, r, r.low)/get.pi(posmat,fun,infinity,0)}
 ##'
 ##' If \code{comparison.type} is "independent", this is:
 ##'
-##' \code{tau = get.theta(posmat, fun, r, r.low)/get.theta(posmat,fun,0,infinity)}
+##' \code{tau = get.theta(posmat, fun, r, r.low)/get.theta(posmat,fun,infinity,0)}
 ##'
 ##' @author Justin Lessler and Henrik Salje
 ##'
 ##' @family get.tau
 ##' @family spatialtau
 ##'
-##' @examples
-##' \dontrun{
-##' R/examples/get_tau.R
-##' }
+##' @example R/examples/get_tau.R
 ##'
+
 get.tau <- function(posmat,
                     fun,
                     r = 1,
                     r.low=rep(0,length(r)),
-                    comparison.type = "representative") {
+                    comparison.type = "representative",
+                    data.frame=TRUE) {
 
   xcol <-  which(colnames(posmat)=="x")
   ycol <- which(colnames(posmat)=="y")
@@ -814,7 +884,6 @@ get.tau <- function(posmat,
     stop("unkown comparison type specified")
   }
 
-
   rc <- .Call("get_tau",
               posmat,
               fun,
@@ -824,10 +893,16 @@ get.tau <- function(posmat,
               1:nrow(posmat),
               xcol,
               ycol)
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, tau=rc))
+  }
 }
-##'
-##' Optimizewd version of \code{get.tau} for typed data
+
+
+##' Optimized version of \code{get.tau} for typed data
 ##'
 ##' Version of th e \code{get.tau} function that is optimized for
 ##' statically typed data. That is data where we want the relationship between
@@ -843,8 +918,9 @@ get.tau <- function(posmat,
 ##'   \item "representative" if comparison set is representative of the underlying population
 ##'   \item "independent" if comparison set is cases/events coming from an indepedent process
 ##' }
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
-##' @return tau values for all the distances we looked at
+##' @return data frame of tau values for all the distances
 ##'
 ##' @author Justin Lessler and Henrik Salje
 ##'
@@ -852,38 +928,43 @@ get.tau <- function(posmat,
 ##'
 ##' @example R/examples/get_tau_typed.R
 ##'
+
 get.tau.typed <- function(posmat,
                           typeA = -1,
                           typeB = -1,
                           r=1,
                           r.low=rep(0,length(r)),
-                          comparison.type = "representative") {
-
-  if (comparison.type == "representative") {
-    comp.type.int <- 0
-  } else if (comparison.type == "independent") {
-    comp.type.int <- 1
-  } else {
-    stop("unkown comparison type specified")
-  }
-
-
-  return(.C("get_tau_typed",
-            as.integer(posmat[,"type"]),
-            as.double(posmat[,"x"]),
-            as.double(posmat[,"y"]),
-            as.integer(nrow(posmat)),
-            as.integer(typeA),
-            as.integer(typeB),
-            as.double(r.low),
-            as.double(r),
-            as.integer(length(r)),
-            as.integer(1:nrow(posmat)),
-            as.integer(comp.type.int),
-            rc=double(length(r))
-  )$rc)
+                          comparison.type = "representative",
+                          data.frame=TRUE) {
+     
+     if (comparison.type == "representative") {
+          comp.type.int <- 0
+     } else if (comparison.type == "independent") {
+          comp.type.int <- 1
+     } else {
+          stop("unkown comparison type specified")
+     }
+     
+     rc <- .C("get_tau_typed",
+              as.integer(posmat[,"type"]),
+              as.double(posmat[,"x"]),
+              as.double(posmat[,"y"]),
+              as.integer(nrow(posmat)),
+              as.integer(typeA),
+              as.integer(typeB),
+              as.double(r.low),
+              as.double(r),
+              as.integer(length(r)),
+              as.integer(1:nrow(posmat)),
+              as.integer(comp.type.int),
+              rc=double(length(r)))
+     
+     if (data.frame == FALSE) {
+          return(rc)
+     } else if (data.frame == TRUE) {
+          return(data.frame(r.low=r.low, r=r, tau=rc$rc))
+     }
 }
-
 
 
 ##' Bootstrap confidence interval for the \code{get.tau} values
@@ -899,18 +980,17 @@ get.tau.typed <- function(posmat,
 ##' @param comparison.type the comparison type to pass to get.tau
 ##' @param ci.low the low end of the ci...0.025 by default
 ##' @param ci.high the high end of the ci...0.975 by default
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
-##' @return tau values for all the distances examined
+##' @return a data frame with the point estimate of tau and its low and high confidence interval at each distance
 ##'
 ##' @author Justin Lessler and Henrik Salje
 ##'
 ##' @family get.tau
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_tau_ci.R
-##'  }
+##' @example R/examples/get_tau_ci.R
 ##'
+
 get.tau.ci <- function(posmat,
                        fun,
                        r=1,
@@ -918,20 +998,24 @@ get.tau.ci <- function(posmat,
                        boot.iter = 1000,
                        comparison.type = "representative",
                        ci.low=0.025,
-                       ci.high=0.975) {
-  boots <- get.tau.bootstrap(posmat, fun,
-                             r, r.low, boot.iter,
-                             comparison.type)
-
-  rc <- matrix(nrow=2, ncol=ncol(boots))
-
-  rownames(rc) <- c(ci.low,ci.high)
-
-  for (i in 1:ncol(rc)) {
-    rc[,i] <- quantile(boots[,i], probs=c(ci.low, ci.high))
-  }
-
-  return(rc)
+                       ci.high=0.975,
+                       data.frame=TRUE) {
+     
+     boots <- get.tau.bootstrap(posmat, fun,
+                                r, r.low, boot.iter,
+                                comparison.type)
+     
+     rc <- apply(boots[,-(1:2)], 1, quantile, probs=c(ci.low, ci.high))
+     
+     if (data.frame == FALSE) {
+          return(rc)
+     } else if (data.frame == TRUE) {
+          return(data.frame(r.low=r.low, 
+                            r=r, 
+                            pt.est=get.tau(posmat, fun, r, r.low)$tau, 
+                            ci.low=rc[1,], 
+                            ci.high=rc[2,]))
+     }
 }
 
 
@@ -948,24 +1032,24 @@ get.tau.ci <- function(posmat,
 ##' @param r.low the low end of each range....0  by default
 ##' @param boot.iter the number of bootstrap iterations
 ##' @param comparison.type the comparison type to pass as input to \code{get.pi}
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
-##' @return tau values for all the distances we looked at
+##' @return a matrix containing all bootstrapped values of tau for each distance interval
 ##'
 ##' @author Justin Lessler and Henrik Salje
 ##'
 ##' @family get.tau
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_tau_bootstrap.R
-##'  }
+##' @example R/examples/get_tau_bootstrap.R
 ##'
+
 get.tau.bootstrap <- function(posmat,
                               fun,
                               r=1,
                               r.low=rep(0,length(r)),
                               boot.iter,
-                              comparison.type = "representative") {
+                              comparison.type = "representative",
+                              data.frame=TRUE) {
 
 
   xcol <-  which(colnames(posmat)=="x")
@@ -997,9 +1081,13 @@ get.tau.bootstrap <- function(posmat,
                     xcol,
                     ycol)
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
-
 
 
 ##' runs bootstrapping for \code{get.tau.typed}
@@ -1015,6 +1103,7 @@ get.tau.bootstrap <- function(posmat,
 ##'   \item "representative" if comparison set is representative of the underlying population
 ##'   \item "independent" if comparison set is cases/events coming from an independent process
 ##' }
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return tau values for all the distances we looked at
 ##'
@@ -1022,18 +1111,17 @@ get.tau.bootstrap <- function(posmat,
 ##'
 ##' @family get.tau
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_tau_typed_bootstrap.R
-##'  }
+##' @example R/examples/get_tau_typed_bootstrap.R
 ##'
+
 get.tau.typed.bootstrap <- function(posmat,
                                     typeA = -1,
                                     typeB = -1,
                                     r=1,
                                     r.low=rep(0,length(r)),
                                     boot.iter,
-                                    comparison.type = "representative") {
+                                    comparison.type = "representative",
+                                    data.frame=TRUE) {
 
 
   if (comparison.type == "representative") {
@@ -1062,9 +1150,13 @@ get.tau.typed.bootstrap <- function(posmat,
                  rc=double(length(r))
     )$rc
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))  
+  }
 }
-
 
 
 ##' get the null distribution of the \code{get.tau} function
@@ -1079,6 +1171,7 @@ get.tau.typed.bootstrap <- function(posmat,
 ##' @param r.low the low end of each range....0  by default
 ##' @param permutations the number of permute iterations
 ##' @param comparison.type the comparison type to pass as input to \code{get.pi}
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return tau values for all the distances we looked at
 ##'
@@ -1086,17 +1179,16 @@ get.tau.typed.bootstrap <- function(posmat,
 ##'
 ##' @family get.tau
 ##'
-##' @examples
-##' \dontrun{
-##'  R/examples/get_tau_permute.R
-##'  }
+##' @example R/examples/get_tau_permute.R
 ##'
+
 get.tau.permute <- function(posmat,
                             fun,
                             r=1,
                             r.low=rep(0,length(r)),
                             permutations,
-                            comparison.type = "representative") {
+                            comparison.type = "representative",
+                            data.frame=TRUE) {
 
 
   xcol <-  which(colnames(posmat)=="x")
@@ -1115,7 +1207,6 @@ get.tau.permute <- function(posmat,
     stop("unknown comparison type specified")
   }
 
-
   rc <- matrix(nrow=permutations, ncol=length(r))
   for (i in 1:permutations) {
     inds <- sample(nrow(posmat))#, replace=T)
@@ -1133,9 +1224,13 @@ get.tau.permute <- function(posmat,
                     ycol)
   }
 
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
-
 
 
 ##' get the null distribution for the \code{get.tau.typed} function
@@ -1152,6 +1247,7 @@ get.tau.permute <- function(posmat,
 ##'   \item "representative" if comparison set is representative of the underlying population
 ##'   \item "independent" if comparison set is cases/events coming from an indepedent process
 ##' }
+##' @param data.frame logical indicating whether to return results as a data frame (default = TRUE)
 ##'
 ##' @return a matrix with permutation tau values for each distance specified
 ##'
@@ -1159,18 +1255,17 @@ get.tau.permute <- function(posmat,
 ##'
 ##' @family get.tau
 ##'
-##' @examples
-##' \dontrun{
-##' R/examples/get_tau_typed_permute.R
-##' }
+##' @example R/examples/get_tau_typed_permute.R
 ##'
+
 get.tau.typed.permute <- function(posmat,
                                   typeA = -1,
                                   typeB = -1,
                                   r=1,
                                   r.low=rep(0,length(r)),
                                   permutations,
-                                  comparison.type = "representative") {
+                                  comparison.type = "representative",
+                                  data.frame=TRUE) {
 
   xcol <-  which(colnames(posmat)=="x")
   ycol <- which(colnames(posmat)=="y")
@@ -1206,38 +1301,61 @@ get.tau.typed.permute <- function(posmat,
                  rc=double(length(r))
     )$rc
   }
-  return(rc)
+  
+  if (data.frame == FALSE) {
+       return(rc)
+  } else if (data.frame == TRUE) {
+       return(data.frame(r.low=r.low, r=r, t(rc)))
+  }
 }
 
-NULL
 
-##' @name DengueSimR01
-##' @title Simulated dataset of dengue transmission with basic reproductive number of 1
-##' @format Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, the genotype of the infecting pathogen and the serotype of the infecting pathogen.
-##' @description Dataset simulated using an agent based model with a spatially heterogeneous population structure. Infectious agents were introduced resulting in agent to agent transmission. The distance between successive cases in a transmission chain were randomly drawn from a uniform distribution U(0,100). Each infectious agent resulted in a single transmission to another agent after a delay of 15 days, reflecting the generation time of dengue. There are 11 transmission chains, each with a different genotype. The genotypes are subdivided into four serotypes.
-##' @docType data
-##' @usage DengueSimulationR01
+
+##' Simulated dataset of dengue transmission with basic reproductive number of 1
+##' 
+##' Dataset simulated using an agent based model with a spatially heterogeneous population structure. Infectious agents 
+##' were introduced resulting in agent to agent transmission. The distance between successive cases in a transmission chain 
+##' were randomly drawn from a uniform distribution U(0,100). Each infectious agent resulted in a single transmission to 
+##' another agent after a delay of 15 days, reflecting the generation time of dengue. There are 11 transmission chains, 
+##' each with a different genotype. The genotypes are subdivided into four serotypes.
+##' 
+##' @format Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, 
+##' the genotype of the infecting pathogen and the serotype of the infecting pathogen.
+##' 
 ##' @author Justin Lessler and Henrik Salje
+##' 
+"DengueSimR01"
 
-NULL
 
-##' @name DengueSimR02
-##' @title Simulated dataset of dengue cases with basic reproductive number of 2
-##' @format Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, the genotype of the infecting pathogen and the serotype of the infecting pathogen.
-##' @description Dataset simulated using an agent based model with a spatially heterogeneous population structure. Infectious agents were introduced resulting in agent to agent transmission. The distance between successive cases in a transmission chain were randomly drawn from a uniform distribution U(0,100). Each infectious agent resulted in transmissions to two other agents after a delay of 15 days, reflecting the generation time of dengue. There are 11 transmission chains, each with a different genotype. The genotypes are subdivided into four serotypes.
-##' @docType data
-##' @usage DengueSimulationR02
+##' Simulated dataset of dengue cases with basic reproductive number of 2
+##' 
+##' Dataset simulated using an agent based model with a spatially heterogeneous population structure. Infectious agents 
+##' were introduced resulting in agent to agent transmission. The distance between successive cases in a transmission chain 
+##' were randomly drawn from a uniform distribution U(0,100). Each infectious agent resulted in transmissions to two other 
+##' agents after a delay of 15 days, reflecting the generation time of dengue. There are 11 transmission chains, each with 
+##' a different genotype. The genotypes are subdivided into four serotypes.
+##' 
+##' @format Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, 
+##' the genotype of the infecting pathogen and the serotype of the infecting pathogen.
+##' 
 ##' @author Justin Lessler and Henrik Salje
+##' 
+"DengueSimR02"
 
-NULL
 
-##' @name DengueSimRepresentative
-##' @title Simulated dataset of dengue cases with representative underlying population
-##' @format Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, the genotype of the infecting pathogen and the serotype of the infecting pathogen. Individuals representative from the underlying population have '-999'for time, genotype and serotype.
-##' @description Dataset simulated using an agent based model with a spatially heterogeneous population structure. Infectious agents were introduced resulting in agent to agent transmission. The distance between successive cases in a transmission chain were randomly drawn from a uniform distribution U(0,100). Each infectious agent resulted in transmissions to two other agents after a delay of 15 days, reflecting the generation time of dengue. There are 11 transmission chains, each with a different genotype. The genotypes are subdivided into four serotypes. 500 randomly selected individuals from the underlying population also included.
-##' @docType data
-##' @usage DengueSimRepresentative
+##' Simulated dataset of dengue cases with representative underlying population
+##' 
+##' Dataset simulated using an agent based model with a spatially heterogeneous population structure. Infectious agents were 
+##' introduced resulting in agent to agent transmission. The distance between successive cases in a transmission chain were 
+##' randomly drawn from a uniform distribution U(0,100). Each infectious agent resulted in transmissions to two other agents 
+##' after a delay of 15 days, reflecting the generation time of dengue. There are 11 transmission chains, each with a different 
+##' genotype. The genotypes are subdivided into four serotypes. 500 randomly selected individuals from the underlying population 
+##' also included.
+##' 
+##' @format Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, the genotype 
+##' of the infecting pathogen and the serotype of the infecting pathogen. Individuals representative from the underlying population 
+##' have '-999'for time, genotype and serotype.
+##' 
 ##' @author Justin Lessler and Henrik Salje
-
-NULL
-
+##' 
+"DengueSimRepresentative"

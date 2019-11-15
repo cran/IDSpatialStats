@@ -26,6 +26,8 @@ This function estimates the weights of each theta (number of transmission events
 separating cases at two time points is calculated based on probabilies found in the Wallinga-Teunis matrix.
 }
 \examples{
+\donttest{
+
 case.times <- c(1,2,2,3,3)
 gen <- c(0, 2/3, 1/3, 0, 0)
 t.density <- gen/sum(gen)
@@ -40,6 +42,8 @@ a <- get.transdist.theta(wal.teun.mat=wt,
                          cases=case.times,
                          gen.t.mean=gen.time,
                          max.sep=ngen*2)
+
+}
 }
 \references{
 Salje H, Cummings DAT and Lessler J (2016). “Estimating infectious disease transmission distances using the overall distribution of cases.” Epidemics, 17, pp. 10–18. ISSN 1755-4365, doi: \href{https://www.sciencedirect.com/science/article/pii/S1755436516300317}{10.1016/j.epidem.2016.10.001}.
@@ -52,5 +56,6 @@ Other transdist: \code{\link{est.transdist.bootstrap.ci}},
   \code{\link{est.transdist}}
 }
 \author{
-Justin Lessler, Henrik Salje, and John Giles
+John Giles, Justin Lessler, and Henrik Salje
 }
+\concept{transdist}

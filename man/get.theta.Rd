@@ -4,7 +4,8 @@
 \alias{get.theta}
 \title{Generalized version of \code{get.theta}}
 \usage{
-get.theta(posmat, fun, r = 1, r.low = rep(0, length(r)))
+get.theta(posmat, fun, r = 1, r.low = rep(0, length(r)),
+  data.frame = TRUE)
 }
 \arguments{
 \item{posmat}{a matrix with columns x, y and any other named columns
@@ -23,11 +24,13 @@ so this is not available to the fun}
 interested in}
 
 \item{r.low}{the low end of each range, 0 by default}
+
+\item{data.frame}{logical indicating whether to return results as a data frame (default = TRUE)}
 }
 \value{
 theta value for each distance range that we look at. Where:
 
-\deqn{ \theta(d_1,d_2) = \frac{\sum \boldsymbol{1} (d_{ij} \in (d_1,d_2)) \boldsymbol{1} (f(i,j)=1) }{\sum \sum \boldsymbol{1} (d_{ij} \in (d_1,d_2)) \boldsymbol{1} (f(i,j)=2) }}
+\deqn{ \theta(d_1,d_2) = \frac{\sum \boldsymbol{1} d_{ij} \in [d_1,d_2)) \boldsymbol{1} (f(i,j)=1) }{\sum \sum \boldsymbol{1} d_{ij} \in [d_1,d_2)) \boldsymbol{1} (f(i,j)=2) }}
 }
 \description{
 Generalized version of the \code{get.theta} function that takes in an arbitrary function and
@@ -35,7 +38,9 @@ returns the odds that a point within a particular range of a point of interest s
 specified by the passed in function with that point.
 }
 \examples{
-data(DengueSimulationR02)
+\donttest{
+
+data(DengueSimR02)
 
 r.max<-seq(20,1000,20)
 r.min<-seq(0,980,20)
@@ -47,6 +52,8 @@ sero.type.func<-function(a,b,tlimit=20){
 }
 
 sero.theta<-get.theta(DengueSimR02,sero.type.func,r=r.max,r.low=r.min)
+
+}
 }
 \seealso{
 Other get.theta: \code{\link{get.theta.bootstrap}},
@@ -62,3 +69,5 @@ Other spatialtau: \code{\link{get.pi}},
 \author{
 Justin Lessler and Henrik Salje
 }
+\concept{get.theta}
+\concept{spatialtau}
