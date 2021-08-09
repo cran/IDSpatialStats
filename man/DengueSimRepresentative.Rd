@@ -4,9 +4,11 @@
 \name{DengueSimRepresentative}
 \alias{DengueSimRepresentative}
 \title{Simulated dataset of dengue cases with representative underlying population}
-\format{Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, the genotype 
+\format{
+Matrix with five columns representing the X and Y coordinates of infected individuals, the time of infection, the genotype 
 of the infecting pathogen and the serotype of the infecting pathogen. Individuals representative from the underlying population 
-have '-999'for time, genotype and serotype.}
+have '-999'for time, genotype and serotype.
+}
 \usage{
 DengueSimRepresentative
 }

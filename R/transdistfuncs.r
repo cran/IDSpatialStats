@@ -94,10 +94,12 @@ sim.epidemic <- function(
 ##' 
 
 sim.plot <- function(sim) {
-     par(mfrow=c(1,2))
-     plot(sim[,1], sim[,2], xlab="x", ylab="y")
-     points(sim[1,1], sim[1,2], col='red', pch=3, cex=2)
-     hist(sim[,3], breaks=max(sim[,3]), xlab="Time", ylab="Case count", col='lightblue', main="")
+        oldpar <- par(no.readonly = TRUE)
+        on.exit(par(oldpar))
+        par(mfrow=c(1,2))
+        plot(sim[,1], sim[,2], xlab="x", ylab="y")
+        points(sim[1,1], sim[1,2], col='red', pch=3, cex=2)
+        hist(sim[,3], breaks=max(sim[,3]), xlab="Time", ylab="Case count", col='lightblue', main="")
 }
 
 ##' Calculate the Infector-Infectee Wallinga-Teunis matrix
@@ -430,7 +432,7 @@ est.transdist <- function(
      
      thetas <- 1:dim(theta.weights)[3] # range of thetas
 
-     window <- bounding.box.xy(epi.data[,1:2])
+     window <- spatstat.geom::bounding.box.xy(epi.data[,1:2])
      
      A <- B <- wt.mat.sigma <- wt.mat <- array(NaN, c(ntimes, ntimes))
      
@@ -463,9 +465,9 @@ est.transdist <- function(
                b <- which(case.times == unique.times[k])
                
                if(length(a) == 0 | length(b) == 0)(next)
-               ppp1 <- as.ppp(epi.data[a,1:2, drop=FALSE], window, check=FALSE)
-               ppp2 <- as.ppp(epi.data[b,1:2, drop=FALSE], window, check=FALSE)
-               c <- crossdist(ppp1, ppp2)
+               ppp1 <- spatstat.geom::as.ppp(epi.data[a,1:2, drop=FALSE], window, check=FALSE)
+               ppp2 <- spatstat.geom::as.ppp(epi.data[b,1:2, drop=FALSE], window, check=FALSE)
+               c <- spatstat.geom::crossdist(ppp1, ppp2)
                
                if(j == k){diag(c) <- NA}
                c <- c[which(c < max.dist & c > 0)]

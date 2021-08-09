@@ -4,9 +4,19 @@
 \alias{est.transdist.temporal}
 \title{Change in mean transmission distance over time}
 \usage{
-est.transdist.temporal(epi.data, gen.t.mean, gen.t.sd, t1, max.sep,
-  max.dist, n.transtree.reps = 10, mean.equals.sd = FALSE,
-  theta.weights = NULL, parallel = FALSE, n.cores = NULL)
+est.transdist.temporal(
+  epi.data,
+  gen.t.mean,
+  gen.t.sd,
+  t1,
+  max.sep,
+  max.dist,
+  n.transtree.reps = 10,
+  mean.equals.sd = FALSE,
+  theta.weights = NULL,
+  parallel = FALSE,
+  n.cores = NULL
+)
 }
 \arguments{
 \item{epi.data}{a three-column matrix giving the coordinates (\code{x} and \code{y}) and time of infection (\code{t} for all cases in an epidemic (columns must be in \code{x}, \code{y}, \code{t} order)}
@@ -66,7 +76,7 @@ b <- est.transdist.temporal(epi.data=a,
                             max.dist=1e10,
                             n.transtree.reps=5,
                             mean.equals.sd=TRUE,
-                            parallel=FALSE)
+                            n.cores=2)
 b
 
 plot(b[,2], pch=19, col='grey', ylim=c(min(b[,2], na.rm=TRUE), max(b[,2], na.rm=TRUE)), 
@@ -84,11 +94,12 @@ lines(low, lwd=3, col='blue')
 Salje H, Cummings DAT and Lessler J (2016). “Estimating infectious disease transmission distances using the overall distribution of cases.” Epidemics, 17, pp. 10–18. ISSN 1755-4365, doi: \href{https://www.sciencedirect.com/science/article/pii/S1755436516300317}{10.1016/j.epidem.2016.10.001}.
 }
 \seealso{
-Other transdist: \code{\link{est.transdist.bootstrap.ci}},
-  \code{\link{est.transdist.temporal.bootstrap.ci}},
-  \code{\link{est.transdist.theta.weights}},
-  \code{\link{est.transdist}},
-  \code{\link{get.transdist.theta}}
+Other transdist: 
+\code{\link{est.transdist.bootstrap.ci}()},
+\code{\link{est.transdist.temporal.bootstrap.ci}()},
+\code{\link{est.transdist.theta.weights}()},
+\code{\link{est.transdist}()},
+\code{\link{get.transdist.theta}()}
 }
 \author{
 John Giles, Justin Lessler, and Henrik Salje
